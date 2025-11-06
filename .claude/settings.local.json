@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(del officialblvrd.png SOW.jpg DSC01392.jpg)",
+      "Bash(del reversah.png)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
