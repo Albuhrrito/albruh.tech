@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(del officialblvrd.png SOW.jpg DSC01392.jpg)",
-      "Bash(del reversah.png)"
+      "Bash(del reversah.png)",
+      "WebSearch",
+      "Bash(cp D:/visualStudioCodeFiles/albruh.tech/src/components/Cursor.tsx D:/visualStudioCodeFiles/albruh-tech-v2/src/components/Cursor.tsx)",
+      "Read(//d/visualStudioCodeFiles/albruh-tech-v2/src/components/**)"
     ],
     "deny": [],
     "ask": []
