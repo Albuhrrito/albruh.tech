@@ -1,0 +1,28 @@
+---
+import { projects } from '~/data/projects';
+import ProjectCard from './ProjectCard.astro';
+import ProjectStack from './ProjectStack.tsx';
+---
+<section id="work" class="relative pt-24 pb-0">
+  <div class="mx-auto px-6 mb-20" style="max-width: min(92vw, 1280px);">
+    <div class="font-mono text-xs uppercase tracking-[0.3em] text-accent mb-8 flex items-center gap-4">
+      <span class="block h-px w-12 bg-accent"></span>
+      <span>01 / Selected Work</span>
+    </div>
+    <h2 class="font-display text-fg leading-[1.0] tracking-[-0.02em]" style="font-size: clamp(2.5rem, 6vw, 5rem);">
+      Five projects from the last few years.<br />
+      <span class="text-fg-muted italic">Click through, break things.</span>
+    </h2>
+  </div>
+
+  <div class="project-stack relative">
+    {projects.map((project, i) => (
+      <div class="project-slot">
+        <ProjectCard project={project} index={i} total={projects.length} />
+      </div>
+    ))}
+    <div style="height: 50vh;"></div>
+  </div>
+
+  <ProjectStack client:idle />
+</section>

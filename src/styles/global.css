@@ -1,0 +1,195 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #0a0a0b;
+    --color-bg-elev: #141416;
+    --color-bg-card: #18181b;
+    --color-fg: #f5f5f4;
+    --color-fg-muted: #a1a1aa;
+    --color-fg-dim: #52525b;
+    --color-accent: #ff7d3b;
+  }
+
+  html {
+    color-scheme: dark;
+    background: var(--color-bg);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: 2px;
+  }
+
+  body.has-cursor,
+  body.has-cursor a,
+  body.has-cursor button {
+    cursor: none;
+  }
+}
+
+@layer components {
+  .grain {
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.07;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    animation: grain-rotate 60s linear infinite;
+  }
+
+  .reveal-mask .line {
+    overflow: hidden;
+    display: block;
+  }
+
+  .project-slot {
+    position: relative;
+    height: 100vh;
+  }
+  .project-card {
+    position: sticky;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 0;
+  }
+  @media (min-width: 768px) {
+    .project-card {
+      border-radius: 24px;
+    }
+  }
+
+  .magnetic {
+    display: inline-flex;
+    will-change: transform;
+  }
+
+  .cursor-dot {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.18s ease, opacity 0.2s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-fg-muted);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s ease, height 0.3s ease, border-color 0.3s ease, opacity 0.2s ease;
+  }
+  .cursor-ring.active {
+    width: 56px;
+    height: 56px;
+    border-color: var(--color-accent);
+  }
+
+  .cursor-trail {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9998;
+    mix-blend-mode: screen;
+  }
+
+  .wave-divider {
+    display: block;
+    width: 100%;
+    height: 80px;
+    pointer-events: none;
+  }
+
+  .wave-divider svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .wave-underline {
+    position: relative;
+    display: inline-block;
+  }
+  .wave-underline::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.18em;
+    height: 0.32em;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 12' preserveAspectRatio='none'><path d='M0,6 Q20,0 40,6 T80,6' stroke='%23ff7d3b' stroke-width='1.6' fill='none' stroke-linecap='round'/></svg>");
+    background-size: 80px 100%;
+    background-repeat: repeat-x;
+    animation: wave-slide 6s linear infinite;
+    opacity: 0.85;
+  }
+
+  .wavy-float {
+    animation: wavy-float 8s ease-in-out infinite;
+  }
+}
+
+@keyframes wave-slide {
+  from { background-position: 0 0; }
+  to { background-position: 80px 0; }
+}
+
+@keyframes wavy-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(-0.4deg); }
+}
+
+@keyframes grain-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.85); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain { animation: none; }
+}

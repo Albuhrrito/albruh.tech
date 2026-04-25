@@ -1,0 +1,26 @@
+---
+import HeroReveal from './HeroReveal.tsx';
+---
+<section
+  id="hero"
+  class="relative min-h-screen flex items-center justify-center overflow-hidden"
+>
+  <HeroReveal client:load />
+
+  <div class="wave-divider absolute bottom-0 left-0 right-0 z-10" aria-hidden="true">
+    <svg viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="rgba(255,125,59,0.06)">
+        <animate attributeName="d" dur="9s" repeatCount="indefinite"
+          values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z;
+                  M0,50 C240,10 480,70 720,30 C960,0 1200,60 1440,30 L1440,80 L0,80 Z;
+                  M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" />
+      </path>
+      <path d="M0,55 C200,25 520,75 800,45 C1080,15 1280,65 1440,40 L1440,80 L0,80 Z" fill="rgba(255,125,59,0.04)">
+        <animate attributeName="d" dur="13s" repeatCount="indefinite"
+          values="M0,55 C200,25 520,75 800,45 C1080,15 1280,65 1440,40 L1440,80 L0,80 Z;
+                  M0,40 C200,70 520,15 800,55 C1080,80 1280,20 1440,60 L1440,80 L0,80 Z;
+                  M0,55 C200,25 520,75 800,45 C1080,15 1280,65 1440,40 L1440,80 L0,80 Z" />
+      </path>
+    </svg>
+  </div>
+</section>

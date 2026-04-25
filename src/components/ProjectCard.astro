@@ -1,0 +1,68 @@
+---
+import { Image } from 'astro:assets';
+import type { Project } from '~/data/projects';
+
+interface Props {
+  project: Project;
+  index: number;
+  total: number;
+}
+const { project, index, total } = Astro.props;
+const stickyTop = index * 16;
+---
+<article
+  class="project-card"
+  data-index={index}
+  style={`top: ${stickyTop}px; height: calc(100vh - ${stickyTop}px); z-index: ${index + 10};`}
+>
+  <div class="absolute inset-0">
+    <Image
+      src={project.image}
+      alt={`${project.name} background`}
+      widths={[640, 1280, 1920, 2560]}
+      sizes="100vw"
+      loading={index < 2 ? 'eager' : 'lazy'}
+      quality={75}
+      class="project-bg h-full w-full object-cover scale-110"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-bg via-bg/70 to-bg/30"></div>
+    <div class="absolute inset-0 bg-gradient-to-r from-bg/60 via-transparent to-transparent"></div>
+  </div>
+
+  <div class="relative z-10 h-full flex flex-col justify-end mx-auto px-6 pb-16 md:pb-24" style="max-width: min(92vw, 1280px);">
+    <div class="font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] text-accent mb-6 flex flex-wrap items-center gap-x-4 gap-y-1">
+      <span>{project.n} / {String(total).padStart(2, '0')}</span>
+      <span class="text-fg-dim">—</span>
+      <span class="text-fg-muted">{project.tech.join(' · ')}</span>
+    </div>
+
+    <h3 class="font-display text-fg leading-[0.95] tracking-[-0.03em] mb-6" style="font-size: clamp(2.5rem, 8vw, 6.5rem);">
+      {project.name}
+    </h3>
+
+    <p class="text-fg-muted text-base md:text-lg max-w-2xl mb-10 leading-relaxed">
+      {project.longDesc}
+    </p>
+
+    <div class="flex flex-wrap gap-3 md:gap-4">
+      <a
+        href={project.live}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="magnetic group inline-flex items-center gap-3 px-5 md:px-6 py-3 bg-fg text-bg hover:bg-accent transition-colors font-mono text-xs md:text-sm uppercase tracking-[0.15em] rounded-full"
+      >
+        View Project
+        <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">↗</span>
+      </a>
+      <a
+        href={project.repo}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="magnetic group inline-flex items-center gap-3 px-5 md:px-6 py-3 border border-fg/20 hover:border-accent text-fg hover:text-accent transition-colors font-mono text-xs md:text-sm uppercase tracking-[0.15em] rounded-full"
+      >
+        Source
+        <span aria-hidden="true" class="opacity-60">↗</span>
+      </a>
+    </div>
+  </div>
+</article>

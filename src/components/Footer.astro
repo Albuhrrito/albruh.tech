@@ -1,0 +1,30 @@
+---
+const buildTime = new Date().toISOString().slice(0, 16).replace('T', ' ');
+const commitSha = (import.meta.env.PUBLIC_COMMIT_SHA ?? import.meta.env.GITHUB_SHA ?? 'local').slice(0, 7);
+const year = new Date().getFullYear();
+---
+<footer class="relative border-t border-fg/10 mt-24">
+  <div class="mx-auto px-6 py-12" style="max-width: min(92vw, 1280px);">
+    <div class="grid md:grid-cols-2 gap-8 items-end">
+      <div class="font-mono text-[11px] text-fg-muted leading-loose">
+        <div>
+          <span class="text-fg-dim uppercase tracking-[0.25em] mr-3">Built</span>
+          <span class="text-fg">{buildTime} UTC</span>
+        </div>
+        <div>
+          <span class="text-fg-dim uppercase tracking-[0.25em] mr-3">Commit</span>
+          <span class="text-accent">{commitSha}</span>
+        </div>
+        <div>
+          <span class="text-fg-dim uppercase tracking-[0.25em] mr-3">Stack</span>
+          <span>Astro · Tailwind · GSAP · Lenis</span>
+        </div>
+      </div>
+
+      <div class="md:text-right font-mono text-[11px] text-fg-muted">
+        <div class="text-fg mb-1">Albert Youssef · v2.026</div>
+        <div>© {year}. Hand-crafted, no Webflow harmed.</div>
+      </div>
+    </div>
+  </div>
+</footer>
