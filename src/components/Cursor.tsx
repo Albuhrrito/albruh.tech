@@ -1,5 +1,15 @@
 import { useEffect } from 'react';
 
+type Ripple = {
+  x: number;
+  y: number;
+  born: number;
+  life: number;
+  maxR: number;
+  alpha: number;
+  hue: 'water' | 'click';
+};
+
 export default function Cursor() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -8,8 +18,6 @@ export default function Cursor() {
 
     document.body.classList.add('has-cursor');
 
-    const dot = document.createElement('div');
-    dot.className = 'cursor-dot';
     const ring = document.createElement('div');
     ring.className = 'cursor-ring';
 
@@ -29,18 +37,21 @@ export default function Cursor() {
     resize();
 
     document.body.appendChild(canvas);
-    document.body.appendChild(dot);
     document.body.appendChild(ring);
 
     let mouseX = window.innerWidth / 2;
     let mouseY = window.innerHeight / 2;
     let ringX = mouseX;
     let ringY = mouseY;
+    let lastEmitX = mouseX;
+    let lastEmitY = mouseY;
+    let lastEmitAt = 0;
 
     const TRAIL_LEN = 26;
     const trail: { x: number; y: number }[] = [];
     for (let i = 0; i < TRAIL_LEN; i++) trail.push({ x: mouseX, y: mouseY });
 
+    const ripples: Ripple[] = [];
     let active = false;
     let t = 0;
 
@@ -48,9 +59,53 @@ export default function Cursor() {
       mouseX = e.clientX;
       mouseY = e.clientY;
       active = true;
-      dot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+
+      const now = performance.now();
+      const dx = mouseX - lastEmitX;
+      const dy = mouseY - lastEmitY;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 18 && now - lastEmitAt > 70) {
+        ripples.push({
+          x: mouseX,
+          y: mouseY,
+          born: now,
+          life: 1100 + Math.random() * 300,
+          maxR: 55 + Math.random() * 35,
+          alpha: 0.22 + Math.random() * 0.08,
+          hue: 'water',
+        });
+        lastEmitX = mouseX;
+        lastEmitY = mouseY;
+        lastEmitAt = now;
+      }
     };
-    const onLeaveDoc = () => { active = false; };
+
+    const onMouseDown = (e: MouseEvent) => {
+      ripples.push({
+        x: e.clientX,
+        y: e.clientY,
+        born: performance.now(),
+        life: 900,
+        maxR: 180,
+        alpha: 0.65,
+        hue: 'click',
+      });
+      ripples.push({
+        x: e.clientX,
+        y: e.clientY,
+        born: performance.now() + 60,
+        life: 1100,
+        maxR: 240,
+        alpha: 0.35,
+        hue: 'click',
+      });
+    };
+
+    const onLeaveDoc = () => {
+      active = false;
+    };
+
+    const easeOutCubic = (k: number) => 1 - Math.pow(1 - k, 3);
 
     const tick = () => {
       t += 0.05;
@@ -70,6 +125,53 @@ export default function Cursor() {
 
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const now = performance.now();
+        for (let i = ripples.length - 1; i >= 0; i--) {
+          const r = ripples[i];
+          const age = now - r.born;
+          if (age < 0) continue;
+          const k = age / r.life;
+          if (k >= 1) {
+            ripples.splice(i, 1);
+            continue;
+          }
+          const radius = r.maxR * easeOutCubic(k);
+          const fade = 1 - k;
+          const a = r.alpha * fade;
+
+          if (r.hue === 'water') {
+            const wobble = Math.sin(t * 2 + i) * 0.6;
+            ctx.beginPath();
+            ctx.arc(r.x, r.y, radius + wobble, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(170, 200, 230, ${a * 0.85})`;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            if (radius > 12) {
+              ctx.beginPath();
+              ctx.arc(r.x, r.y, radius * 0.55, 0, Math.PI * 2);
+              ctx.strokeStyle = `rgba(140, 175, 215, ${a * 0.45})`;
+              ctx.lineWidth = 0.7;
+              ctx.stroke();
+            }
+          } else {
+            ctx.beginPath();
+            ctx.arc(r.x, r.y, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(255, 125, 59, ${a})`;
+            ctx.lineWidth = 1.6;
+            ctx.stroke();
+
+            if (radius > 14) {
+              ctx.beginPath();
+              ctx.arc(r.x, r.y, radius * 0.62, 0, Math.PI * 2);
+              ctx.strokeStyle = `rgba(255, 165, 110, ${a * 0.55})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+
         if (active) {
           ctx.lineCap = 'round';
           ctx.lineJoin = 'round';
@@ -86,7 +188,8 @@ export default function Cursor() {
             ctx.quadraticCurveTo(
               (a.x + b.x) / 2 + wobX,
               (a.y + b.y) / 2 + wobY,
-              b.x, b.y
+              b.x,
+              b.y
             );
             ctx.stroke();
           }
@@ -107,19 +210,20 @@ export default function Cursor() {
     });
 
     window.addEventListener('mousemove', onMove);
+    window.addEventListener('mousedown', onMouseDown);
     window.addEventListener('resize', resize);
     document.addEventListener('mouseleave', onLeaveDoc);
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mousedown', onMouseDown);
       window.removeEventListener('resize', resize);
       document.removeEventListener('mouseleave', onLeaveDoc);
       interactive.forEach((el) => {
         el.removeEventListener('mouseenter', onEnter);
         el.removeEventListener('mouseleave', onLeave);
       });
-      dot.remove();
       ring.remove();
       canvas.remove();
       document.body.classList.remove('has-cursor');
