@@ -108,10 +108,11 @@ export default function Cursor() {
     const easeOutCubic = (k: number) => 1 - Math.pow(1 - k, 3);
 
     const tick = () => {
+      try {
       t += 0.05;
       ringX += (mouseX - ringX) * 0.18;
       ringY += (mouseY - ringY) * 0.18;
-      ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+      ring.style.transform = `translate3d(${ringX}px, ${ringY}px, 0)`;
 
       const lead = trail[0];
       lead.x += (mouseX - lead.x) * 0.32;
@@ -143,7 +144,7 @@ export default function Cursor() {
           if (r.hue === 'water') {
             const wobble = Math.sin(t * 2 + i) * 0.6;
             ctx.beginPath();
-            ctx.arc(r.x, r.y, radius + wobble, 0, Math.PI * 2);
+            ctx.arc(r.x, r.y, Math.max(0, radius + wobble), 0, Math.PI * 2);
             ctx.strokeStyle = `rgba(170, 200, 230, ${a * 0.85})`;
             ctx.lineWidth = 1;
             ctx.stroke();
@@ -196,6 +197,9 @@ export default function Cursor() {
         }
       }
 
+      } catch (err) {
+        console.error('cursor tick error', err);
+      }
       raf = requestAnimationFrame(tick);
     };
     let raf = requestAnimationFrame(tick);
